@@ -6,6 +6,7 @@ import buttonClick from "./sounds/Party-popper-confetti-celebration.mp3";
 import celebration from "./sounds/happy.mp3";
 import heartSound from "./sounds/blue.mp3";
 import sadSound from "./sounds/Whoosh-sound-effect-fast.mp3";
+import { div } from "framer-motion/client";
 
 function App() {
   const [dontForgiveCount, setDontForgiveCount] = useState(0);
@@ -139,96 +140,98 @@ function App() {
   }, []);
 
   return (
-    <div className="relative max-w-[500px] min-h-screen bg-pink-100 flex items-center justify-center overflow-hidden">
-      {hearts.map((heart) => (
-        <FaHeart
-          key={heart.id}
-          className="absolute text-pink-400 opacity-70 animate-pulse"
-          style={{
-            left: `${heart.x}%`,
-            top: `${heart.y}%`,
-            fontSize: `${heart.size}px`,
-            transition: "top 0.1s linear",
+    <div className="flex w-full justify-center bg-pink-100">
+      <div className="relative max-w-[500px] min-h-screen bg-pink-100 flex items-center justify-center overflow-hidden">
+        {hearts.map((heart) => (
+          <FaHeart
+            key={heart.id}
+            className="absolute text-pink-400 opacity-70 animate-pulse"
+            style={{
+              left: `${heart.x}%`,
+              top: `${heart.y}%`,
+              fontSize: `${heart.size}px`,
+              transition: "top 0.1s linear",
+            }}
+          />
+        ))}
+
+        {/* Background music audio element */}
+        <audio ref={audioRef} src="/blue.mp3" preload="auto" loop />
+
+        {/* Music toggle button */}
+        <button
+          onClick={() => {
+            if (!isMusicPlaying && audioRef.current) {
+              audioRef.current.play().catch(console.error);
+            }
+            setIsMusicPlaying(!isMusicPlaying);
           }}
-        />
-      ))}
+          className="absolute top-4 left-4 z-50 p-3 bg-white rounded-full shadow-lg"
+        >
+          {isMusicPlaying ? "🔊 Music ON" : "🔇 Music OFF"}
+        </button>
 
-      {/* Background music audio element */}
-      <audio ref={audioRef} src="/blue.mp3" preload="auto" loop />
+        {/* Sound effects toggle button */}
+        <button
+          onClick={() => setIsSoundOn(!isSoundOn)}
+          className="absolute top-4 right-4 z-50 p-3 bg-white rounded-full shadow-lg"
+        >
+          {isSoundOn ? <FaVolumeUp /> : <FaVolumeMute />}
+        </button>
 
-      {/* Music toggle button */}
-      <button
-        onClick={() => {
-          if (!isMusicPlaying && audioRef.current) {
-            audioRef.current.play().catch(console.error);
-          }
-          setIsMusicPlaying(!isMusicPlaying);
-        }}
-        className="absolute top-4 left-4 z-50 p-3 bg-white rounded-full shadow-lg"
-      >
-        {isMusicPlaying ? "🔊 Music ON" : "🔇 Music OFF"}
-      </button>
+        {!isForgiven ? (
+          <div className="relative z-10 text-center p-10 bg-white rounded-xl shadow-xl w-full max-w-6xl">
+            <GiHearts className="text-5xl text-pink-500 mx-auto mb-4 animate-pulse" />
+            <h1 className="text-3xl font-bold text-pink-600 mb-2">
+              ဆွေဆွေလေး လက်ခံပေးပါဦး
+            </h1>
+            <p className="text-gray-600 mb-6">{apologyMessage}</p>
 
-      {/* Sound effects toggle button */}
-      <button
-        onClick={() => setIsSoundOn(!isSoundOn)}
-        className="absolute top-4 right-4 z-50 p-3 bg-white rounded-full shadow-lg"
-      >
-        {isSoundOn ? <FaVolumeUp /> : <FaVolumeMute />}
-      </button>
+            <button
+              onClick={handleForgive}
+              className="text-white font-bold py-4 px-8 rounded-full transition-all duration-300 shadow-lg"
+              style={{
+                backgroundColor: "#ec4899",
+                fontSize: `${20 * Math.pow(2, dontForgiveCount)}px`,
+                position: "relative",
+                width: `${200 * Math.pow(2, dontForgiveCount)}px`,
+                zIndex: 10,
+              }}
+            >
+              <FaHeart className="inline mr-2" /> ချစ်တယ်
+            </button>
 
-      {!isForgiven ? (
-        <div className="relative z-10 text-center p-10 bg-white rounded-xl shadow-xl w-full max-w-6xl">
-          <GiHearts className="text-5xl text-pink-500 mx-auto mb-4 animate-pulse" />
-          <h1 className="text-3xl font-bold text-pink-600 mb-2">
-            ဆွေဆွေလေး လက်ခံပေးပါဦး
-          </h1>
-          <p className="text-gray-600 mb-6">{apologyMessage}</p>
-
-          <button
-            onClick={handleForgive}
-            className="text-white font-bold py-4 px-8 rounded-full transition-all duration-300 shadow-lg"
-            style={{
-              backgroundColor: "#ec4899",
-              fontSize: `${20 * Math.pow(2, dontForgiveCount)}px`,
-              position: "relative",
-              width: `${200 * Math.pow(2, dontForgiveCount)}px`,
-              zIndex: 10,
-            }}
-          >
-            <FaHeart className="inline mr-2" /> ချစ်တယ်
-          </button>
-
-          <button
-            onClick={handleDontForgive}
-            className="bg-gray-300 text-gray-800 font-bold py-4 px-8 rounded-full transition-all duration-300 shadow-lg"
-            style={{
-              ...rejectButtonStyle,
-            }}
-          >
-            မချစ်ဘူး
-          </button>
-        </div>
-      ) : (
-        <div className="text-center p-10 bg-white rounded-xl shadow-xl z-10 w-full max-w-6xl">
-          <h1 className="text-4xl text-pink-600 font-bold mb-4">
-            ကျေးဇူးတင်ပါတယ်!
-          </h1>
-          <p className="text-xl text-gray-700 mb-6">
-            မင်းငါ့ကို ချစ်တာကြောင့် အရမ်းပျော်တယ်
-          </p>
-          <button
-            onClick={() => {
-              setIsForgiven(false);
-              setDontForgiveCount(0);
-              setHearts([]);
-            }}
-            className="bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 px-6 rounded-full"
-          >
-            နောက်တစ်ကြိမ် ကြည့်မယ်
-          </button>
-        </div>
-      )}
+            <button
+              onClick={handleDontForgive}
+              className="bg-gray-300 text-gray-800 font-bold py-4 px-8 rounded-full transition-all duration-300 shadow-lg"
+              style={{
+                ...rejectButtonStyle,
+              }}
+            >
+              မချစ်ဘူး
+            </button>
+          </div>
+        ) : (
+          <div className="text-center p-10 bg-white rounded-xl shadow-xl z-10 w-full max-w-6xl">
+            <h1 className="text-4xl text-pink-600 font-bold mb-4">
+              ကျေးဇူးတင်ပါတယ်!
+            </h1>
+            <p className="text-xl text-gray-700 mb-6">
+              မင်းငါ့ကို ချစ်တာကြောင့် အရမ်းပျော်တယ်
+            </p>
+            <button
+              onClick={() => {
+                setIsForgiven(false);
+                setDontForgiveCount(0);
+                setHearts([]);
+              }}
+              className="bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 px-6 rounded-full"
+            >
+              နောက်တစ်ကြိမ် ကြည့်မယ်
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
