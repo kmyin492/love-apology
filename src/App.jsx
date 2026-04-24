@@ -4,7 +4,7 @@ import { GiHearts } from "react-icons/gi";
 import useSound from "use-sound";
 import buttonClick from "./sounds/Party-popper-confetti-celebration.mp3";
 import celebration from "./sounds/happy.mp3";
-import heartSound from "./sounds/heartbeat-slight-reverb(fromnoisetosound.com).mp3";
+import heartSound from "./sounds/blue.mp3";
 import sadSound from "./sounds/Whoosh-sound-effect-fast.mp3";
 
 function App() {
@@ -19,11 +19,11 @@ function App() {
     soundEnabled: isSoundOn,
   });
   const [playCelebration] = useSound(celebration, {
-    volume: 0.7,
+    volume: 0.2,
     soundEnabled: isSoundOn,
   });
   const [playHeartSound] = useSound(heartSound, {
-    volume: 0.4,
+    volume: 0.9,
     soundEnabled: isSoundOn,
   });
   const [playSadSound] = useSound(sadSound, {
@@ -46,30 +46,40 @@ function App() {
   }, []);
 
   // Background music play state and ref
-  const [isMusicPlaying, setIsMusicPlaying] = useState(true);
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
   const audioRef = useRef(null);
 
   useEffect(() => {
-    if (audioRef.current) {
-      if (isMusicPlaying && audioRef.current.paused) {
-        audioRef.current
-          .play()
-          .catch((e) => console.warn("Autoplay blocked:", e));
-      } else {
-        audioRef.current.pause();
-      }
+    if (!audioRef.current) return;
+
+    if (isMusicPlaying) {
+      audioRef.current
+        .play()
+        .catch((e) => console.warn("Playback blocked:", e));
+    } else {
+      audioRef.current.pause();
     }
   }, [isMusicPlaying]);
 
   useEffect(() => {
-    const unlockAudio = () => {
-      if (audioRef.current && isMusicPlaying) {
-        audioRef.current.play().catch(() => {});
+    const unlockAudio = async () => {
+      if (!audioRef.current) return;
+
+      try {
+        await audioRef.current.play();
+        setIsMusicPlaying(true);
+      } catch (e) {
+        console.warn("User interaction required:", e);
       }
+
       window.removeEventListener("click", unlockAudio);
     };
-    window.addEventListener("click", unlockAudio);
-    return () => window.removeEventListener("click", unlockAudio);
+
+    window.addEventListener("click", unlockAudio, { once: true });
+
+    return () => {
+      window.removeEventListener("click", unlockAudio);
+    };
   }, []);
 
   const handleDontForgive = () => {
@@ -86,7 +96,7 @@ function App() {
     setHearts([...hearts, newHeart]);
 
     const newCount = dontForgiveCount + 1;
-    setDontForgiveCount(newCount);
+    setDontForgiveCount(0);
     setApologyMessage(
       apologyMessages[Math.floor(Math.random() * apologyMessages.length)],
     );
@@ -103,8 +113,9 @@ function App() {
     playCelebration();
     playHeartSound();
     setIsForgiven(true);
-    if (audioRef.current && isMusicPlaying) {
-      audioRef.current.play();
+    if (audioRef.current) {
+      audioRef.current.play().catch(() => {});
+      setIsMusicPlaying(true);
     }
     const celebrationHearts = Array.from({ length: 50 }, (_, i) => ({
       id: Date.now() + i,
@@ -128,7 +139,7 @@ function App() {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-pink-100 flex items-center justify-center overflow-hidden">
+    <div className="relative max-w-[500px] min-h-screen bg-pink-100 flex items-center justify-center overflow-hidden">
       {hearts.map((heart) => (
         <FaHeart
           key={heart.id}
@@ -143,11 +154,16 @@ function App() {
       ))}
 
       {/* Background music audio element */}
-      <audio ref={audioRef} src="/blue.mp3" loop />
+      <audio ref={audioRef} src="/blue.mp3" preload="auto" loop />
 
       {/* Music toggle button */}
       <button
-        onClick={() => setIsMusicPlaying(!isMusicPlaying)}
+        onClick={() => {
+          if (!isMusicPlaying && audioRef.current) {
+            audioRef.current.play().catch(console.error);
+          }
+          setIsMusicPlaying(!isMusicPlaying);
+        }}
         className="absolute top-4 left-4 z-50 p-3 bg-white rounded-full shadow-lg"
       >
         {isMusicPlaying ? "🔊 Music ON" : "🔇 Music OFF"}
