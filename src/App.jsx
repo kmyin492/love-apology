@@ -32,16 +32,16 @@ function App() {
   });
 
   const apologyMessages = [
-    "စိတ်မကောင်းပါဘူး။ ငါတကယ် နောင်တရနေပါတယ်။",
-    "ငါ့အမှားအတွက် တောင်းပန်လိုက်ပါတယ်။ မင်းကို ငါအရမ်းချစ်တယ်။",
-    "မင်းစိတ်ဆိုးနေတာကို မြင်ရတာ ငါ့အတွက် ခက်ခဲပါတယ်။ ခွင့်လွှတ်ပါ။",
+    "ငါ့ဘဝရဲ့ နေ့ရက်တိုင်းမှာ မင်းရှိနေပေးမလား? ငါမင်းကို တကယ်ချစ်တယ်။",
+    "မင်းက ငါ့အတွက်တော့ အစားထိုးလို့မရတဲ့ တစ်ဦးတည်းသောသူပါ။ ငါ့ရဲ့ လက်တွဲဖော် ဖြစ်ပေးပါဦး။",
+    "မင်းဆီက 'ဟုတ်ကဲ့' ဆိုတဲ့ အဖြေလေးကို ရဖို့ ငါအမြဲ စောင့်မျှော်နေမှာပါ။",
   ];
 
   const [apologyMessage, setApologyMessage] = useState("");
 
   useEffect(() => {
     setApologyMessage(
-      apologyMessages[Math.floor(Math.random() * apologyMessages.length)]
+      apologyMessages[Math.floor(Math.random() * apologyMessages.length)],
     );
   }, []);
 
@@ -88,7 +88,7 @@ function App() {
     const newCount = dontForgiveCount + 1;
     setDontForgiveCount(newCount);
     setApologyMessage(
-      apologyMessages[Math.floor(Math.random() * apologyMessages.length)]
+      apologyMessages[Math.floor(Math.random() * apologyMessages.length)],
     );
 
     setRejectButtonStyle({
@@ -121,7 +121,7 @@ function App() {
       setHearts((prevHearts) =>
         prevHearts
           .map((h) => ({ ...h, y: h.y - h.speed }))
-          .filter((h) => h.y > -10)
+          .filter((h) => h.y > -10),
       );
     }, 50);
     return () => clearInterval(interval);
@@ -165,7 +165,7 @@ function App() {
         <div className="relative z-10 text-center p-10 bg-white rounded-xl shadow-xl w-full max-w-6xl">
           <GiHearts className="text-5xl text-pink-500 mx-auto mb-4 animate-pulse" />
           <h1 className="text-3xl font-bold text-pink-600 mb-2">
-            ချစ်လေး ခွင့်လွှတ်ပါ
+            ဆွေဆွေလေး လက်ခံပေးပါဦး
           </h1>
           <p className="text-gray-600 mb-6">{apologyMessage}</p>
 
@@ -180,7 +180,7 @@ function App() {
               zIndex: 10,
             }}
           >
-            <FaHeart className="inline mr-2" /> ခွင့်လွှတ်တယ်
+            <FaHeart className="inline mr-2" /> ချစ်တယ်
           </button>
 
           <button
@@ -190,7 +190,7 @@ function App() {
               ...rejectButtonStyle,
             }}
           >
-            ခွင့်မလွှတ်ဘူး
+            မချစ်ဘူး
           </button>
         </div>
       ) : (
@@ -199,7 +199,7 @@ function App() {
             ကျေးဇူးတင်ပါတယ်!
           </h1>
           <p className="text-xl text-gray-700 mb-6">
-            မင်းငါ့ကို ခွင့်လွှတ်တာကြောင့် အရမ်းပျော်တယ်
+            မင်းငါ့ကို ချစ်တာကြောင့် အရမ်းပျော်တယ်
           </p>
           <button
             onClick={() => {
